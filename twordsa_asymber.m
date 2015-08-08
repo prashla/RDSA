@@ -93,7 +93,7 @@ for j=1:replications
     thetaminus=theta-c_k*delta;  
     yplus=feval(loss, p, thetaplus, sigma, type);
     yminus=feval(loss, p, thetaminus, sigma, type);
-    ghat=(yplus-yminus)./(2*c_k*delta);   
+    ghat = (1/(1+epsilon1))*((yplus - yminus)/(2*c_k))*delta;
 %   theta update
     theta=theta-a_k*ghat;
     % Two lines below invoke constraints
@@ -151,7 +151,7 @@ end
 % Return Normalized loss and mean square error, with sample standard
 % deviations
 w=losstheta/replications/Ltheta0;
-x=std(lossesAllReplications);
+x=std(lossesAllReplications)/(replications^.5);
 y=errtheta/replications/mseTheta0;
-z=std(nmseAllReplications);
+z=std(nmseAllReplications)/(replications^.5);
 %disp(mat2str(theta,4));

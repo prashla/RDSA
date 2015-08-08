@@ -81,7 +81,7 @@ for j=1:replications
     thetaminus=theta-c_k*delta;  
     yplus=feval(loss, p, thetaplus, sigma, type);
     yminus=feval(loss, p, thetaminus, sigma, type);
-    ghat=(yplus-yminus)./(2*c_k*delta);   
+    ghat = 3*((yplus - yminus)/(2*c_k))*delta;   
 %   theta update
     theta=theta-a_k*ghat;
     % Two lines below invoke constraints
@@ -131,6 +131,6 @@ end
 
 % Display results: normalized loss and normalized mean square error, 
 % both with sample standard deviation
-str = sprintf('Normalized loss: %e +- %e, Normalised MSE: %e +- %e', std(lossesAllReplications), losstheta/replications/Ltheta0, errtheta/replications/mseTheta0, std(nmseAllReplications));
+str = sprintf('Normalized loss: %e +- %e, Normalised MSE: %e +- %e', losstheta/replications/Ltheta0, std(lossesAllReplications)/(replications^.5), errtheta/replications/mseTheta0, std(nmseAllReplications)/(replications^.5));
 disp(str);
 %disp(mat2str(theta,4));

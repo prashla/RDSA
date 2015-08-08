@@ -157,6 +157,6 @@ end
 
 % Display results: normalized loss and normalized mean square error, 
 % both with sample standard deviation
-str = sprintf('Normalized loss: %e +- %e, Normalised MSE: %e +- %e', std(lossesAllReplications), losstheta/replications/Ltheta0, errtheta/replications/mseTheta0, std(nmseAllReplications));
+str = sprintf('Normalized loss: %e +- %e, Normalised MSE: %e +- %e', losstheta/replications/Ltheta0, std(lossesAllReplications)/(replications^.5), errtheta/replications/mseTheta0, std(nmseAllReplications)/(replications^.5));
 disp(str);
 %disp(mat2str(theta,4));
