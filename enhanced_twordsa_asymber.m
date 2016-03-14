@@ -1,4 +1,4 @@
-% Prashanth L.A., Jul. 2015
+% D.Sai koti reddy, Feb. 2016
 %
 % An RDSA variant of the 2SPSA code. The primary difference is in the generation of perturbation r.v.s. 
 % In this case, the latter are sampled from an asymmetric Bernoulli
@@ -15,7 +15,7 @@
 % replications -> number of independent simulations
 % theta_0 -> initial point for 1RDSA-AsymBer (If N=0, then 2RDSA-AsymBer starts at theta_0)
 %
-function [w x y z] = twordsa_asymber(p, sigma, type, epsilon, numSimulations,replications, theta_0)
+function [w x y z] = enhanced_twordsa_asymber(p, sigma, type, epsilon, numSimulations,replications, theta_0)
 %value of numerator in a_k sequence for all iterations of 1RDSA-AsymBer 
 %and first N-measurement-based iterations in the initialization of 2RDSA-AsymBer
 a1=1;
@@ -78,7 +78,9 @@ for j=1:replications
   theta=theta_0;
 %   Hbar=500*eye(p);
  B=triu(ones(p,p))/p;
-  Hbar=1.05*2*B'*B;
+ Hbar=1.05*2*B'*B;
+ Hbarbar=Hbar;
+ w=0;
   %INITIAL N ITERATIONS OF 1RDSA-AsymBer PRIOR TO 2RDSA-AsymBer ITERATIONS
   for k=1:N/2    %use of N-avg is to account for avg used in setting lossold 
     a_k=a1/(k+A1)^alpha1;
@@ -108,6 +110,9 @@ for j=1:replications
 for k=1:(numSimulations-N)/3
     a_k=a2/(k+A2)^alpha2;
     c_k=c2/k^gamma2;
+%     w_k=1/(k+1);
+    w=w+(c_k)^(4);
+    w_k=(c_k)^(4)/w;
 % GENERATION OF AVERAGED GRADIENT AND HESSIAN (NO AVERAGING IF gH_avg=1)                     
       unifrands = unifrnd(0,1,p,1);
         for l=1:p
@@ -130,10 +135,29 @@ for k=1:(numSimulations-N)/3
           M_n(idx,idx) = 1/kappa*((2*(1+epsilon)^2)*M_n(idx,idx) - (1+epsilon));
       end      
 % STATEMENT PROVIDING AN AVERAGE OF SP GRAD. APPROXS. PER ITERATION      
-      y=feval(loss, p, theta, sigma, type);      
-      Hhat = ((yplus+yminus-2*y)/(c_k^2))*M_n;
-      Hhat=.5*(Hhat+Hhat');    
-    Hbar=(k/(k+1))*Hbar+Hhat/(k+1);          
+      y=feval(loss, p, theta, sigma, type); 
+         
+     Hhat = ((yplus+yminus-2*y)/(c_k^2))*M_n;
+%   if (k == 1)
+%       Psi_k = zeros(p,p);
+%   else    
+     %Hbardig=Hbar;
+     Hbaroffdig=Hbarbar;
+     %M_ndig=M_n;
+     M_noffdig=M_n;
+     for idx=1:p
+          M_noffdig(idx,idx) = 0;
+          Hbaroffdig(idx,idx) = 0;
+     end 
+     M_ndig=M_n-M_noffdig;
+     Hbardig=Hbarbar-Hbaroffdig;
+     Psi_k=(M_ndig*(delta'*Hbaroffdig*delta)+M_noffdig*(delta'*Hbardig*delta));
+     Psi_k=.5*Psi_k+.5*Psi_k';
+%   end
+     Hhatinput=.5*(Hhat+Hhat')-Psi_k;    
+   % Hbar=(k/(k+1))*Hbar+Hhat/(k+1); 
+     Hbar=(1-w_k)*Hbar+w_k*Hhatinput; 
+           
 %   THE THETA UPDATE (FORM BELOW USES GAUSSIAN ELIMINATION TO AVOID DIRECT 
 %   COMPUTATION OF HESSIAN INVERSE)
     Hbarbar=sqrtm(Hbar*Hbar+.000001*eye(p)/k);    
