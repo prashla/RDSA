@@ -35,11 +35,17 @@ ii) twordsa_unif.m --> An RDSA variant of the 2SPSA code from J.C. Spall. The pr
 iii) twordsa_asymber.m --> Similar to 2RDSA-Unif, except that the perturbation r.v.s. follow an asymmetric Bernoulli distribution.
 
 On input parameters: Most of the algorithms above take as input the following:
+
 p -> dimension of the problem
+
 sigma -> noise parameter. Noise is (p+1)-dimensional Gaussian with variance sigma^2
+
 type -> 1 for quadratic, 2 for fourth-order loss (see loss_myexample.m)
+
 numSimulation -> this is the simulation budget that impacts the number of 2SPSA iterations
+
 replications -> number of independent simulations
+
 theta_0 -> initial point
 
 4 References
