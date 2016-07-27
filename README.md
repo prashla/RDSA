@@ -6,9 +6,9 @@ Random direction stochastic approximation for simulation optimization
 Contents
 --------
 1 Introduction                                                                                                  
-2 Notes on usage
+2 Notes on usage	
 3 References
-                                                       1
+                                                       
 1 Introduction
 --------------
 This software package (in Matlab) provides a class of algorithms for simulation optimization using random direction stochastic approximation (RDSA). 
@@ -21,13 +21,17 @@ The main files in the distribution are:
 First-order schemes:
 -------------------
 i) onespsa.m --> this contains the implementation of first-order SPSA algorithm [1] and is a simplified version of that available on J.C. Spall's ISSO book website http://www.jhuapl.edu/ISSO
+
 ii) onerdsa_unif.m --> An RDSA variant of the 1SPSA code from J.C. Spall. The primary difference is in the generation of perturbation r.v.s. In this case, the latter are sampled from an uniform [-1,1] distribution.
+
 iii) onerdsa_asymber.m --> Similar to 1RDSA-Unif, except that the perturbation r.v.s. follow an asymmetric Bernoulli distribution.
 
 Second-order schemes:
 ---------------------
 i) twospsa.m --> this contains the implementation of second-order SPSA algorithm [2] and is a simplified version of that available on J.C. Spall's ISSO book website 
+
 ii) twordsa_unif.m --> An RDSA variant of the 2SPSA code from J.C. Spall. The primary difference is in the generation of perturbation r.v.s. In this case, the latter are sampled from an uniform [-1,1] distribution.
+
 iii) twordsa_asymber.m --> Similar to 2RDSA-Unif, except that the perturbation r.v.s. follow an asymmetric Bernoulli distribution.
 
 On input parameters: Most of the algorithms above take as input the following:
@@ -41,5 +45,7 @@ theta_0 -> initial point
 4 References
 ------------
 [1] J. C. Spall, "Multivariate stochastic approximation using a simultaneous perturbation gradient approximation", IEEE Trans. Auto. Cont., vol. 37, no. 3, pp. 332-341, 1992.
+
 [2] J. C. Spall, "Adaptive stochastic approximation by the simultaneous perturbation method", IEEE Trans. Autom. Contr., vol. 45, pp. 1839-1853, 2000.
+
 [3] Prashanth L.A., S. Bhatnagar, Michael Fu and Steve Marcus, "Adaptive system optimization using (simultaneous) random directions stochastic approximation", arXiv:1502.05577, 2015.
