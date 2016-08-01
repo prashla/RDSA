@@ -11,11 +11,12 @@ Contents
                                                        
 1 Introduction
 --------------
-This software package (in Matlab) provides a class of algorithms for simulation optimization using random direction stochastic approximation (RDSA). 
-These include first-order (gradient) as well as second-order (Newton) schemes. The algorithms incorporate both continuous-valued as well as discrete-valued perturbations into both our algorithms. The former are chosen to be independent and identically distributed (i.i.d.) symmetric uniformly distributed random variables (r.v.), while the latter are i.i.d., asymmetric Bernoulli r.v.s. See [3] for a detailed description.
+This software package provides a class of algorithms for simulation optimization using random direction stochastic approximation (RDSA). The package is in two part: a matlab part that implements RDSA schemes on two synthetic functions and a traffic simulation part that incorporates RDSA schemes for adaptively tuning the thresholds of a traffic light control (TLC) algorithm.
 
-2 Notes on Usage
-----------------
+The implementation includes first-order (gradient) as well as second-order (Newton) schemes. The RDSA algorithms incorporate both continuous-valued as well as discrete-valued perturbations. The former are chosen to be independent and identically distributed (i.i.d.) symmetric uniformly distributed random variables (r.v.), while the latter are i.i.d., asymmetric Bernoulli r.v.s. See [3] for a detailed description.
+
+2 Matlab part:
+--------------
 The main files in the distribution are:
 
 First-order schemes:
@@ -48,6 +49,32 @@ replications -> number of independent simulations
 
 theta_0 -> initial point
 
+2 Traffic simulation part:
+----------------------------------------------
+
+This part is in Java and provides the implementation of adaptive threshold tuning algorithms based on RDSA. 
+In practice, obtaining exact queue length information is difficult, but one can obtain coarse estimates along the lanes of the road network, for instance, by placing magnetic sensor loops at some distance from the junction. The challenge is to choose the optimal locations for placing sensor loops to infer congestion information for any lane in the road network considered and the threshold tuning algorithms cater to this need.
+
+This package is based on the source code of the Green Light District (GLD) traffic simulator [2]. GLD codebase is modified to include the RL based TLC algorithm. The files relevant to RDSA schemes in the distribution are: 
+
+i) src.gld.tt.RDSARunner.java --> Wrapper for running the 2RDSA based threshold tuning algorithm
+
+ii) gld.tt.TwoRDSA_OuterLoop.java --> Implementation of the  threshold tuning outer loop that is based on 2RDSA 
+
+iii) gld.algo.tlc.PTLCL12345T123 --> Simulates traffic for a given threshold parameter with a simple priority based traffic light control scheme
+
+On input parameters for 2RDSA based schemes (to be set in the main function of RDSARunner.java): 
+
+i) trainingBudget -> the number of function evaluations in the training phase 
+
+ii) numReplicationsForTesting -> After the training phase, the thresholds are fixed and then a number of independent simulations (that this variable is set to) are run and the empirical average cost from each simulation is recorded 
+
+iii) trajectoryLengthTrainingPhase -> length of each simulated trajectory during training phase
+
+iv) trajectoryLengthTestingPhase --> length of each simulated trajectory during testing phase
+
+See Section IV-E of [3] for a detailed description.
+
 4 References
 ------------
 [1] J. C. Spall, "Multivariate stochastic approximation using a simultaneous perturbation gradient approximation", IEEE Trans. Auto. Cont., vol. 37, no. 3, pp. 332-341, 1992.
@@ -55,3 +82,8 @@ theta_0 -> initial point
 [2] J. C. Spall, "Adaptive stochastic approximation by the simultaneous perturbation method", IEEE Trans. Autom. Contr., vol. 45, pp. 1839-1853, 2000.
 
 [3] Prashanth L.A., S. Bhatnagar, Michael Fu and Steve Marcus, "Adaptive system optimization using (simultaneous) random directions stochastic approximation", arXiv:1502.05577, 2015.
+
+5 For more information, whom do I contact?
+------------------------------------------
+
+    Prashanth L.A. email: prashla@umd.edu
