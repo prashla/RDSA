@@ -15,7 +15,7 @@ This software package provides a class of algorithms for simulation optimization
 
 The implementation includes first-order (gradient) as well as second-order (Newton) schemes. The RDSA algorithms incorporate both continuous-valued as well as discrete-valued perturbations. The former are chosen to be independent and identically distributed (i.i.d.) symmetric uniformly distributed random variables (r.v.), while the latter are i.i.d., asymmetric Bernoulli r.v.s. See [3] for a detailed description.
 
-2 Matlab part:
+2 Matlab part
 --------------
 The main files in the distribution are:
 
@@ -49,8 +49,8 @@ replications -> number of independent simulations
 
 theta_0 -> initial point
 
-2 Traffic simulation part:
-----------------------------------------------
+2 Traffic simulation part
+-------------------------
 
 This part is in Java and provides the implementation of adaptive threshold tuning algorithms based on RDSA. 
 In practice, obtaining exact queue length information is difficult, but one can obtain coarse estimates along the lanes of the road network, for instance, by placing magnetic sensor loops at some distance from the junction. The challenge is to choose the optimal locations for placing sensor loops to infer congestion information for any lane in the road network considered and the threshold tuning algorithms cater to this need.
