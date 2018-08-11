@@ -6,7 +6,7 @@ Random direction stochastic approximation for simulation optimization
 Contents
 --------
 1 Introduction                                                                                                  
-2 Notes on usage	
+2 Notes on usage 														    
 3 References
                                                        
 1 Introduction
@@ -15,7 +15,7 @@ This software package provides a class of algorithms for simulation optimization
 
 The implementation includes first-order (gradient) as well as second-order (Newton) schemes. The RDSA variants with random perturbations incorporate both continuous-valued as well as discrete-valued perturbations. The former are chosen to be independent and identically distributed (i.i.d.) symmetric uniformly distributed random variables (r.v.), while the latter are i.i.d., asymmetric Bernoulli r.v.s. See [3] for a detailed description. While the RDSA variants with deterministic perturbations uses two choices for perturbations - a semi-lexicographic sequence and a perturbation matrix-based sequence. See [4] for a detailed description.
 
-2 Matlab part
+2a Matlab part
 --------------
 The main files in the distribution are:
 
@@ -62,7 +62,7 @@ replications -> number of independent simulations
 
 theta_0 -> initial point
 
-2 Traffic simulation part
+2b Traffic simulation part
 -------------------------
 
 This part is in Java and provides the implementation of adaptive threshold tuning algorithms based on RDSA. 
@@ -88,7 +88,7 @@ iv) trajectoryLengthTestingPhase --> length of each simulated trajectory during 
 
 See Section IV-E of [3] for a detailed description.
 
-4 References
+3 References
 ------------
 [1] J. C. Spall, "Multivariate stochastic approximation using a simultaneous perturbation gradient approximation", IEEE Trans. Auto. Cont., vol. 37, no. 3, pp. 332-341, 1992.
 
@@ -98,7 +98,7 @@ See Section IV-E of [3] for a detailed description.
 
 [4] Prashanth L A, Shalabh Bhatnagar, Nirav Bhavsar, Michael Fu and Steven I. Marcus, "Random directions stochastic approximation with deterministic perturbations", 	arXiv:1808.02871, 2018.
 
-5 For more information, whom do I contact?
+4 For more information, whom do I contact?
 ------------------------------------------
 
     Prashanth L.A. email: prashla@umd.edu
