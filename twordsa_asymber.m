@@ -9,13 +9,13 @@
 % Parameters:
 % p -> dimension of the problem
 % sigma -> noise parameter. Noise is (p+1)-dimensional Gaussian with variance sigma^2
-% type -> 1 for quadratic, 2 for fourth-order loss
+% type -> 1 for quadratic, 2 for fourth-order loss, 3 = Powell singular function, 4 = Rosenbrock function, 5 = Rastrigin function
 % epsilon -> distribution parameter for asymmetric Bernoulli perturbations.
 % numSimulation -> this is the simulation budget that impacts the number of 2RDSA-AsymBer iterations
 % replications -> number of independent simulations
 % theta_0 -> initial point for 1RDSA-AsymBer (If N=0, then 2RDSA-AsymBer starts at theta_0)
 %
-function [w x y z] = twordsa_asymber(p, sigma, type, epsilon, numSimulations,replications, theta_0)
+function [w x y z all] = twordsa_asymber(p, sigma, type, epsilon, numSimulations,replications, theta_0)
 %value of numerator in a_k sequence for all iterations of 1RDSA-AsymBer 
 %and first N-measurement-based iterations in the initialization of 2RDSA-AsymBer
 a1=1;
@@ -45,8 +45,12 @@ end
 % thetaStar=0
 thetaStar = getOptima(p, type);
 
-rand('seed',31415297)
-randn('seed',3111113)                       
+% rand('seed',31415297)
+% randn('seed',3111113)
+
+rand('seed',12345678901)
+randn('seed',12345678903)
+
 delta = zeros(p,1);
 %
 %the loop 1:replications below is for doing multiple replications for use in averaging to 
@@ -76,9 +80,9 @@ Hhat=eye(p);
 for j=1:replications
 %INITIALIZATION OF PARAMETER AND HESSIAN ESTIMATES
   theta=theta_0;
-%   Hbar=500*eye(p);
- B=triu(ones(p,p))/p;
-  Hbar=1.05*2*B'*B;
+   Hbar=500*eye(p);
+%  B=triu(ones(p,p))/p;
+%   Hbar=1.05*2*B'*B;
   %INITIAL N ITERATIONS OF 1RDSA-AsymBer PRIOR TO 2RDSA-AsymBer ITERATIONS
   for k=1:N/2    %use of N-avg is to account for avg used in setting lossold 
     a_k=a1/(k+A1)^alpha1;
@@ -157,3 +161,25 @@ x=std(lossesAllReplications)/(replications^.5);
 y=errtheta/replications/mseTheta0;
 z=std(nmseAllReplications)/(replications^.5);
 %disp(mat2str(theta,4));
+
+
+% Display results: normalized loss and normalized mean square error, 
+% both with sample standard deviation
+disp(['Number of iterations of outer for loop is : ',num2str(k)]);
+
+% Display results: normalized loss and mean square error
+str = sprintf('Normalized loss: %3.2e +- %3.2e, Normalised MSE: %3.2e +- %3.2e', losstheta/replications/Ltheta0, std(lossesAllReplications)/(replications^.5), errtheta/replications/mseTheta0, std(nmseAllReplications)/(replications^.5));
+disp(str);
+
+str = sprintf('Normalised MSE: %10.9f, Std dev: %10.9f',errtheta/replications/mseTheta0, std(nmseAllReplications));
+disp(str);
+str1 = sprintf('Std Error: %10.9f',std(nmseAllReplications)/sqrt(replications));
+disp(str1);
+str2 = sprintf('%3.2e (%3.2e) #%d',errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1);
+disp(str2);
+if isempty(k)
+   all = zeros(1,3);
+else
+    all = [errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1];
+end
+disp(mat2str(theta,4));

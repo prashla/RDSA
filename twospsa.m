@@ -25,12 +25,12 @@
 % Parameters:
 % p -> dimension of the problem
 % sigma -> noise parameter. Noise is (p+1)-dimensional Gaussian with variance sigma^2
-% type -> 1 for quadratic, 2 for fourth-order loss
+% type -> 1 for quadratic, 2 for fourth-order loss, 3 = Powell singular function, 4 = Rosenbrock function, 5 = Rastrigin function
 % numSimulation -> this is the simulation budget that impacts the number of 2SPSA iterations
 % replications -> number of independent simulations
 % theta_0 -> initial point for 1SPSA (If N=0, then 2SPSA starts at theta_0)
 
-function twospsa(p, sigma, type, numSimulations, replications, theta_0)
+function [all] = twospsa(p, sigma, type, numSimulations, replications, theta_0)
 %value of numerator in a_k sequence for all iterations of 1SPSA 
 %and first N-measurement-based iterations in the initialization of 2SPSA
 a1=1;
@@ -91,10 +91,10 @@ Hhat=eye(p);
 for j=1:replications
 %INITIALIZATION OF PARAMETER AND HESSIAN ESTIMATES
   theta=theta_0;
-%   Hbar=500*eye(p);
-%   Hbarbar=Hbar;
-  B=triu(ones(p,p))/p;
-  Hbar=1.05*2*B'*B;
+   Hbar=500*eye(p);
+%    Hbarbar=Hbar;
+%   B=triu(ones(p,p))/p;
+%   Hbar=1.05*2*B'*B;
   
   %INITIAL N ITERATIONS OF 1SPSA PRIOR TO 2SPSA ITERATIONS
   for k=1:N/2    %use of N-avg is to account for avg used in setting lossold 
@@ -161,6 +161,24 @@ end
 
 % Display results: normalized loss and normalized mean square error, 
 % both with sample standard deviation
-str = sprintf('Normalized loss: %e +- %e, Normalised MSE: %e +- %e', losstheta/replications/Ltheta0, std(lossesAllReplications)/(replications^.5), errtheta/replications/mseTheta0, std(nmseAllReplications)/(replications^.5));
+disp(['Number of iterations of outer for loop is : ',num2str(k)]);
+
+% Display results: normalized loss and mean square error
+str = sprintf('Normalized loss: %3.2e +- %3.2e, Normalised MSE: %3.2e +- %3.2e', losstheta/replications/Ltheta0, std(lossesAllReplications)/(replications^.5), errtheta/replications/mseTheta0, std(nmseAllReplications)/(replications^.5));
 disp(str);
-%disp(mat2str(theta,4));
+
+str = sprintf('Normalised MSE: %10.9f, Std dev: %10.9f',errtheta/replications/mseTheta0, std(nmseAllReplications));
+disp(str);
+str1 = sprintf('Std Error: %10.9f',std(nmseAllReplications)/sqrt(replications));
+disp(str1);
+str2 = sprintf('%3.2e (%3.2e) #%d',errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1);
+disp(str2);
+if isempty(k)
+   all = zeros(1,3);
+else
+    all = [errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1];
+end
+% all = [errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1];
+disp(mat2str(theta,4));
+
+

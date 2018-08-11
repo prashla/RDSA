@@ -1,17 +1,19 @@
-% Prashanth L.A., Jul. 2015
+% Prashanth L.A., Nirav Bhavsar Jan. 2018
 %
-% An RDSA variant of the 2SPSA code. The primary difference is in the generation of perturbation r.v.s. 
-% In this case, the latter are sampled from an uniform distribution.
-%
+% An 2RDSA variant with deterministic perturbation. The primary difference is in the generation of perturbation r.v.s. 
+% Deterministic Perturbations are generated from permuatation matrix.
+
 % Parameters:
 % p -> dimension of the problem
 % sigma -> noise parameter. Noise is (p+1)-dimensional Gaussian with variance sigma^2
-% type -> 1 for quadratic, 2 for fourth-order loss
-% numSimulation -> this is the simulation budget that impacts the number of 2RDSA-Unif iterations
+% type -> 1 for quadratic, 2 for fourth-order loss, 3 = Powell singular function, 4 = Rosenbrock function, 5 = Rastrigin function
+% epsilon ->
+% numSimulation -> this is the simulation budget that impacts the number of iterations
 % replications -> number of independent simulations
-% theta_0 -> initial point for 1RDSA-Unif (If N=0, then 2RDSA-Unif starts at theta_0)
-%
-function y = twordsa_perm_dp(p, sigma, type, numSimulations, replications, theta_0)
+% theta_0 -> initial point 
+
+
+function [all] = twordsa_perm_dp(p, sigma, type, numSimulations, replications, theta_0)
 %value of numerator in a_k sequence for all iterations of 1RDSA-Unif 
 %and first N-measurement-based iterations in the initialization of 2RDSA-Unif
 a1=1;
@@ -118,6 +120,11 @@ for k=0:((numSimulations-N)/(3*p)) - 1
        
         % GENERATE THE HESSIAN UPDATE
          M_n = delta(m,:)'*delta(m,:);
+%       for idx=1:p
+%           M_n(idx,idx) = 1/kappa*(M_n(idx,idx) - beta);
+%       end    
+    
+       
        
         ck = c1/((k+1)*p + m)^gamma1;
         thetaplus = theta + ck*delta(m,:)';
@@ -162,7 +169,12 @@ str = sprintf('Normalised MSE: %10.9f, Std dev: %10.9f',errtheta/replications/ms
 disp(str);
 str1 = sprintf('Std Error: %10.9f',std(nmseAllReplications)/sqrt(replications));
 disp(str1);
-str2 = sprintf('%3.2e (%3.2e)',errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications));
+str2 = sprintf('%3.2e (%3.2e) #%d',errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1);
 disp(str2);
 
+if isempty(k)
+   all = zeros(1,3);
+else
+    all = [errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1];
+end
 disp(mat2str(theta,4));

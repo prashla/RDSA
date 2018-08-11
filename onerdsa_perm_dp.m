@@ -1,19 +1,18 @@
-% Prashanth L.A., Jul. 2015
+% Prashanth L.A., Nirav Bhavsar Jan. 2018
 %
-% An RDSA variant of the 1SPSA code. The primary difference is in the generation of perturbation r.v.s. 
-% In this case, the latter are sampled from an asymmetric Bernoulli distribution.
+% An 1RDSA variant with deterministic perturbation. The primary difference is in the generation of perturbation r.v.s. 
 % Deterministic Perturbations are generated from permuatation matrix.
 
 % Parameters:
 % p -> dimension of the problem
 % sigma -> noise parameter. Noise is (p+1)-dimensional Gaussian with variance sigma^2
-% type -> 1 for quadratic, 2 for fourth-order loss
+% type -> 1 for quadratic, 2 for fourth-order loss, 3 = Powell singular function, 4 = Rosenbrock function, 5 = Rastrigin function
 % epsilon ->
 % numSimulation -> this is the simulation budget that impacts the number of iterations
 % replications -> number of independent simulations
 % theta_0 -> initial point 
 %
-function [w x y z] = onerdsa_perm_dp(p, sigma, type, numSimulations, replications, theta_0)
+function [w x y z all] = onerdsa_perm_dp(p, sigma, type, numSimulations, replications, theta_0)
 % the following are chosen by standard guidelines
 alpha =1; % exponent for stepsize
 gamma =.101; % exponent for perturbation constant
@@ -48,7 +47,8 @@ for i=1:replications
   theta=theta_0;
   for k=0:(numSimulations/(2*p))-1
     ak = a/(k+1+A)^alpha;
-    ck = c/(k+1)^gamma;
+%   ck = c/(k+1)^gamma; Old ck
+
     
     % Generating permutation matrix
     delta = eye(p);
@@ -56,6 +56,7 @@ for i=1:replications
     ghat = 0;
     
     for j = 1:p
+        ck = c/((k+1)*p + j)^gamma;
         thetaplus = theta + ck*delta(j,:)';
         thetaminus = theta - ck*delta(j,:)';
         yplus=feval(loss, p, thetaplus, sigma, type);
@@ -84,11 +85,14 @@ disp(['Number of iterations of outer for loop is : ',num2str(k+1)]);
 % Display results: MSE normalized
 str = sprintf('Normalised MSE: %10.9f, Std dev: %10.9f',errtheta/replications/mseTheta0, std(nmseAllReplications));
 disp(str);
-str1 = sprintf('Std Error: %10.9f',std(nmseAllReplications)/sqrt(p));
+str1 = sprintf('Std Error: %10.9f',std(nmseAllReplications)/sqrt(replications));
 disp(str1);
+str2 = sprintf('%0.2e (%0.2e) #%d',errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1);
+disp(str2);
 w=lossfinal/replications/Ltheta0;
 x=std(lossesAllReplications);
 y=errtheta/replications/mseTheta0;
 z=std(nmseAllReplications);
+all = [errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1];
 disp(mat2str(theta,4));
 %disp(quantile(nmseAllReplications, [0.95 0.05]));

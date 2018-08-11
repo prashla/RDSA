@@ -1,19 +1,19 @@
-% Prashanth L.A., Jul. 2015
+% Prashanth L.A., Nirav Bhavsar Jan. 2018
 %
-% An RDSA variant of the 1SPSA code. The primary difference is in the generation of perturbation r.v.s. 
-% In this case, the latter are sampled from an asymmetric Bernoulli distribution.
+% An 1RDSA variant with deterministic perturbation. The primary difference is in the generation of perturbation r.v.s. 
 % Deterministic Perturbations are generated from permuatation matrix.
+% In this case unkike Perm DP, KW DP algorithm independently updates the individual coordinates.
 
 % Parameters:
 % p -> dimension of the problem
 % sigma -> noise parameter. Noise is (p+1)-dimensional Gaussian with variance sigma^2
-% type -> 1 for quadratic, 2 for fourth-order loss
+% type -> 1 for quadratic, 2 for fourth-order loss, 3 = Powell singular function, 4 = Rosenbrock function, 5 = Rastrigin function
 % epsilon ->
 % numSimulation -> this is the simulation budget that impacts the number of iterations
 % replications -> number of independent simulations
 % theta_0 -> initial point 
 %
-function [w x y z] = onerdsa_kw_dp(p, sigma, type, numSimulations, replications, theta_0)
+function [w x y z all] = onerdsa_kw_dp(p, sigma, type, numSimulations, replications, theta_0)
 % the following are chosen by standard guidelines
 alpha =1; % exponent for stepsize
 gamma =.101; % exponent for perturbation constant
@@ -86,11 +86,12 @@ str = sprintf('Normalised MSE: %10.9f, Std dev: %10.9f',errtheta/replications/ms
 disp(str);
 str1 = sprintf('Std Error: %10.9f',std(nmseAllReplications)/sqrt(replications));
 disp(str1);
-str2 = sprintf('%5.4f (%5.4f)',errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications));
+str2 = sprintf('%5.4f (%5.4f) #%d',errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1);
 disp(str2);
 w=lossfinal/replications/Ltheta0;
 x=std(lossesAllReplications);
 y=errtheta/replications/mseTheta0;
 z=std(nmseAllReplications);
+all = [errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1];
 disp(mat2str(theta,4));
 %disp(quantile(nmseAllReplications, [0.95 0.05]));

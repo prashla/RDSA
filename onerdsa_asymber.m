@@ -6,13 +6,13 @@
 % Parameters:
 % p -> dimension of the problem
 % sigma -> noise parameter. Noise is (p+1)-dimensional Gaussian with variance sigma^2
-% type -> 1 for quadratic, 2 for fourth-order loss
+% type -> 1 for quadratic, 2 for fourth-order loss, 3 = Powell singular function, 4 = Rosenbrock function, 5 = Rastrigin function
 % epsilon ->
 % numSimulation -> this is the simulation budget that impacts the number of 2SPSA iterations
 % replications -> number of independent simulations
 % theta_0 -> initial point 
 %
-function [w x y z] = onerdsa_asymber(p, sigma, type, epsilon, numSimulations, replications, theta_0)
+function [w x y z all] = onerdsa_asymber(p, sigma, type, epsilon, numSimulations, replications, theta_0)
 % the following are chosen by standard guidelines
 alpha =1; % exponent for stepsize
 gamma =.101; % exponent for perturbation constant
@@ -45,7 +45,7 @@ mseTheta0=(theta_0-thetaStar)'*(theta_0-thetaStar);
 % outer loop for replications
 for i=1:replications
   theta=theta_0;
-  for k=0:numSimulations/2-1
+  for k=0:(numSimulations/2)-1
     ak = a/(k+1+A)^alpha;
     ck = c/(k+1)^gamma;
     % Generate asymmetric Bernoulli perturbations
@@ -74,14 +74,23 @@ for i=1:replications
   lossesAllReplications(1, i) = lossvalue/Ltheta0;
 end
 
+disp(['Number of iterations of outer for loop is : ',num2str(k+1)]);
+
 % Display normalized loss values
 %sprintf('Normalized loss: %5.4f', lossfinal/replications/Ltheta0)
 
 % Display results: MSE normalized
-%sprintf('Normalised MSE: %5.4f, Std dev: %5.4f',errtheta/replications/mseTheta0, std(nmseAllReplications))
+str = sprintf('Normalised MSE: %10.9f, Std dev: %10.9f',errtheta/replications/mseTheta0, std(nmseAllReplications));
+disp(str);
+str1 = sprintf('Std Error: %10.9f',std(nmseAllReplications)/sqrt(replications));
+disp(str1);
+str2 = sprintf('%5.4f (%5.4f) #%d',errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1);
+disp(str2);
 w=lossfinal/replications/Ltheta0;
 x=std(lossesAllReplications);
 y=errtheta/replications/mseTheta0;
 z=std(nmseAllReplications);
+all = [errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1];
+
 disp(mat2str(theta,4));
 %disp(quantile(nmseAllReplications, [0.95 0.05]));

@@ -11,12 +11,12 @@
 % Parameters:
 % p -> dimension of the problem
 % sigma -> noise parameter. Noise is (p+1)-dimensional Gaussian with variance sigma^2
-% type -> 1 for quadratic, 2 for fourth-order loss
+% type -> 1 for quadratic, 2 for fourth-order loss, 3 = Powell singular function, 4 = Rosenbrock function, 5 = Rastrigin function
 % numSimulation -> this is the simulation budget that impacts the number of 2SPSA iterations
 % replications -> number of independent simulations
 % theta_0 -> initial point
 %
-function onespsa(p, sigma, type, numSimulations, replications, theta_0)
+function [all] = onespsa(p, sigma, type, numSimulations, replications, theta_0)
 alpha =1;
 gamma =.101;
 a=1;
@@ -66,8 +66,17 @@ for i=1:replications
   lossesAllReplications(1, i) = lossvalue/Ltheta0;
   nmseAllReplications(1, i) = (theta-thetaStar)'*(theta-thetaStar)/mseTheta0;
 end
+disp(['Number of iterations of outer for loop is : ',num2str(k+1)]);
 
 % Display results: normalized loss and mean square error
-str = sprintf('Normalized loss: %e +- %e, Normalised MSE: %e +- %e', lossfinal/replications/Ltheta0, std(lossesAllReplications), errtheta/replications/mseTheta0, std(nmseAllReplications));
+str = sprintf('Normalized loss: %5.4f +- %5.4f, Normalised MSE: %5.4f +- %5.4f', lossfinal/replications/Ltheta0, std(lossesAllReplications), errtheta/replications/mseTheta0, std(nmseAllReplications));
 disp(str);
+str = sprintf('Normalised MSE: %10.9f, Std dev: %10.9f',errtheta/replications/mseTheta0, std(nmseAllReplications));
+disp(str);
+str1 = sprintf('Std Error: %10.9f',std(nmseAllReplications)/sqrt(replications));
+disp(str1);
+str2 = sprintf('%5.4f (%5.4f) #%d',errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1);
+disp(str2);
+all = [errtheta/replications/mseTheta0,std(nmseAllReplications)/sqrt(replications),k+1];
+
 disp(mat2str(theta,4));

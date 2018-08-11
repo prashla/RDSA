@@ -1,7 +1,7 @@
 # RDSA
 Random direction stochastic approximation for simulation optimization
 =====================================================================
-											August, 2015
+											August, 2018
 											-------------
 Contents
 --------
@@ -11,9 +11,9 @@ Contents
                                                        
 1 Introduction
 --------------
-This software package provides a class of algorithms for simulation optimization using random direction stochastic approximation (RDSA). The package is in two part: a matlab part that implements RDSA schemes on two synthetic functions and a traffic simulation part that incorporates RDSA schemes for adaptively tuning the thresholds of a traffic light control (TLC) algorithm.
+This software package provides a class of algorithms for simulation optimization using random direction stochastic approximation (RDSA). The package is in two part: a matlab part that implements RDSA with random and deterministic perturbations schemes on five synthetic functions and a traffic simulation part that incorporates RDSA schemes for adaptively tuning the thresholds of a traffic light control (TLC) algorithm.
 
-The implementation includes first-order (gradient) as well as second-order (Newton) schemes. The RDSA algorithms incorporate both continuous-valued as well as discrete-valued perturbations. The former are chosen to be independent and identically distributed (i.i.d.) symmetric uniformly distributed random variables (r.v.), while the latter are i.i.d., asymmetric Bernoulli r.v.s. See [3] for a detailed description.
+The implementation includes first-order (gradient) as well as second-order (Newton) schemes. The RDSA variants with random perturbations incorporate both continuous-valued as well as discrete-valued perturbations. The former are chosen to be independent and identically distributed (i.i.d.) symmetric uniformly distributed random variables (r.v.), while the latter are i.i.d., asymmetric Bernoulli r.v.s. See [3] for a detailed description. While the RDSA variants with deterministic perturbations uses two choices for perturbations - a semi-lexicographic sequence and a perturbation matrix-based sequence. See [4] for a detailed description.
 
 2 Matlab part
 --------------
@@ -27,6 +27,13 @@ ii) onerdsa_unif.m --> An RDSA variant of the 1SPSA code from J.C. Spall. The pr
 
 iii) onerdsa_asymber.m --> Similar to 1RDSA-Unif, except that the perturbation r.v.s. follow an asymmetric Bernoulli distribution.
 
+iv) onerdsa_lex_dp.m --> An 1RDSA variant with deterministic perturbation. The primary difference is in the generation of perturbation r.v.s. Deterministic Perturbations are generated from lexicographic sequence.
+
+v) onerdsa_perm_dp.m --> Similar to 1RDSA-Lex-DP, except that the deterministic perturbations r.v.s. are generated from permuatation matrix.
+
+vi) onerdsa_kw_dp.m --> Similar to 1RDSA-Perm-DP, except that in this case unkike Perm-DP, KW-DP algorithm independently updates the individual coordinates.
+
+
 Second-order schemes:
 ---------------------
 i) twospsa.m --> this contains the implementation of second-order SPSA algorithm [2] and is a simplified version of that available on J.C. Spall's ISSO book website 
@@ -35,13 +42,19 @@ ii) twordsa_unif.m --> An RDSA variant of the 2SPSA code from J.C. Spall. The pr
 
 iii) twordsa_asymber.m --> Similar to 2RDSA-Unif, except that the perturbation r.v.s. follow an asymmetric Bernoulli distribution.
 
+iv) twordsa_lex_dp.m --> An 2RDSA variant with deterministic perturbation. The primary difference is in the generation of perturbation r.v.s. Deterministic Perturbations are generated from lexicographic sequence.
+
+v) twordsa_perm_dp.m --> Similar to 2RDSA-Lex-DP, except that the deterministic perturbations r.v.s. are generated from permuatation matrix.
+
+
+
 On input parameters: Most of the algorithms above take as input the following:
 
 p -> dimension of the problem
 
 sigma -> noise parameter. Noise is (p+1)-dimensional Gaussian with variance sigma^2
 
-type -> 1 for quadratic, 2 for fourth-order loss (see loss_myexample.m)
+type -> 1 for quadratic, 2 for fourth-order loss, 3 = Powell singular function, 4 = Rosenbrock function, 5 = Rastrigin function (see loss_myexample.m)
 
 numSimulation -> this is the simulation budget that impacts the number of 2SPSA iterations
 
@@ -83,7 +96,10 @@ See Section IV-E of [3] for a detailed description.
 
 [3] Prashanth L.A., S. Bhatnagar, Michael Fu and Steve Marcus, "Adaptive system optimization using (simultaneous) random directions stochastic approximation", arXiv:1502.05577, 2015.
 
+[4] Prashanth L A, Shalabh Bhatnagar, Nirav Bhavsar, Michael Fu and Steven I. Marcus, "Random directions stochastic approximation with deterministic perturbations", 	arXiv:1808.02871, 2018.
+
 5 For more information, whom do I contact?
 ------------------------------------------
 
     Prashanth L.A. email: prashla@umd.edu
+    Nirav Bhavsar email: cs17s016@smail.iitm.ac.in
